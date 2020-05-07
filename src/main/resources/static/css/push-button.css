@@ -74,12 +74,12 @@ li {
 }
 
 .round:hover {
-    width: 130%;
-    height: 130%;
+    width: 120%;
+    height: 120%;
     left: -15%;
     top: -15%;
     font-size: 45px;
-    padding-top: 95px;
+    padding-top: 90px;
     -webkit-box-shadow: 5px 5px 10px rgba(0,0,0,.3);
     -o-box-shadow: 5px 5px 10px rgba(0,0,0,.3);
     -moz-box-shadow: 5px 5px 10px rgba(0,0,0,.3);

@@ -21,13 +21,26 @@ function connect() {
         setConnected(true);
         console.log('Connected: ' + frame);
         stompClient.subscribe('/user/queue/reply', function(message) {
-                                                            showGreeting(JSON.parse(message.body));
+                                                            showMessage(JSON.parse(message.body));
                                                         });
 
         stompClient.subscribe('/topic/info', function(message) {
-                                                                    showGreeting(message.body);
+                                                                    showMessage(message.body);
                                                                 })
     });
+
+    var socketQ = new SockJS('/question');
+        stompClientQ = Stomp.over(socketQ);
+        stompClientQ.connect({
+        }
+        , function (frame) {
+            setConnected(true);
+            console.log('Connected: ' + frame);
+
+            stompClient.subscribe('/topic/question', function(message) {
+                                                                        showMessage(JSON.parse(message.body).description);
+                                                                    })
+        });
 }
 
 function disconnect() {
@@ -39,15 +52,19 @@ function disconnect() {
 }
 
 function sendName() {
-    stompClient.send("/app/greeting", {
-    }, JSON.stringify({
-        'name': $("#name").val(),
-        'toUser' : $("#name").val()
-    }));
+     stompClient.send("/app/greeting", {
+     }, JSON.stringify({
+         'name': $("#name").val(),
+         'toUser' : $("#name").val()
+     }));
+ }
+
+function sendQuestion(question) {
+    stompClient.send("/app/question", {}, question);
 }
 
-function showGreeting(message) {
-    $("#greetings").append("<tr><td>" + message + "</td></tr>");
+function showMessage(message) {
+    $("#question").text(message);
 }
 
 $(function () {
@@ -57,6 +74,17 @@ $(function () {
     $( "#connect" ).click(function() { connect(); });
     $( "#disconnect" ).click(function() { disconnect(); });
     $( "#send" ).click(function() { sendName(); });
+
+    $( ".question" ).click(function() {
+
+        sendQuestion(
+            JSON.stringify({
+                     'id': $(this).attr('qid'),
+                     'description' : $(this).attr('description'),
+                     'cost': $(this).attr('cost')
+                 })
+        );
+    });
 });
 
 $( document ).ready(function() {

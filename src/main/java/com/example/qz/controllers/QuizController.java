@@ -1,6 +1,13 @@
 package com.example.qz.controllers;
 
+import java.util.List;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
+
+import com.example.qz.dto.Question;
+import com.example.qz.repositories.QuestionRepository;
 import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.messaging.handler.annotation.MessageExceptionHandler;
 import org.springframework.messaging.handler.annotation.MessageMapping;
@@ -19,6 +26,9 @@ public class QuizController {
     @Autowired
     SimpMessagingTemplate template;
 
+    @Autowired
+    QuestionRepository questionRepository;
+
     @RequestMapping(value = "/home", method = RequestMethod.GET)
     public String greetingForm(Authentication authentication, Model model) {
         model.addAttribute("name", authentication.getName());
@@ -26,8 +36,8 @@ public class QuizController {
     }
 
     @RequestMapping(value = "/admin", method = RequestMethod.GET)
-    public String admin(Authentication authentication, Model model) {
-        model.addAttribute("name", authentication.getName());
+    public String admin(Model model) {
+        model.addAttribute("questions", questionRepository.findAll());
         return "admin";
     }
 
@@ -43,6 +53,12 @@ public class QuizController {
             "/queue/reply", "success");
 
         template.convertAndSend("/topic/info", authentication.getName());
+    }
+
+    @MessageMapping("/question")
+    public void runQuestion(@Payload Question question) {
+        Gson gson = new GsonBuilder().create();
+        template.convertAndSend("/topic/question", gson.toJson(question));
     }
 
     @MessageExceptionHandler

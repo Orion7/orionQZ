@@ -1,0 +1,14 @@
+version: '3'
+services:
+  postgres:
+    image: postgres:alpine
+    ports:
+      - '16000:5432'
+    environment:
+      POSTGRES_DB: quizzz
+      POSTGRES_USER: quizzz
+      POSTGRES_PASSWORD: quizzz
+
+
+
+

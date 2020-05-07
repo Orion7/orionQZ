@@ -5,3 +5,11 @@
  .div-center {
      text-align: center;
  }
+
+ #question {
+     display: block;
+     margin: auto;
+     width: 80%;
+     word-wrap: break-word;
+     font-size: 20px;
+ }
