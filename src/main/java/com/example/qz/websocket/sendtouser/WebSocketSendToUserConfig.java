@@ -43,6 +43,7 @@ public class WebSocketSendToUserConfig implements WebSocketMessageBrokerConfigur
 
     public void registerStompEndpoints(StompEndpointRegistry stompEndpointRegistry) {
         stompEndpointRegistry.addEndpoint("/greeting").withSockJS();
+        stompEndpointRegistry.addEndpoint("/ready").withSockJS();
         stompEndpointRegistry.addEndpoint("/question").withSockJS();
     }
 }

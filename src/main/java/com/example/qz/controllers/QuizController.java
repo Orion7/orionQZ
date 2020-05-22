@@ -1,13 +1,12 @@
 package com.example.qz.controllers;
 
-import java.util.List;
-import java.util.stream.Collectors;
-import java.util.stream.Stream;
-
 import com.example.qz.dto.Question;
+import com.example.qz.repositories.DBRepository;
+import com.example.qz.repositories.GameRepository;
 import com.example.qz.repositories.QuestionRepository;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
+import lombok.Synchronized;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.messaging.handler.annotation.MessageExceptionHandler;
 import org.springframework.messaging.handler.annotation.MessageMapping;
@@ -29,10 +28,23 @@ public class QuizController {
     @Autowired
     QuestionRepository questionRepository;
 
+    @Autowired
+    GameRepository gameRepository;
+
+    @Autowired
+    private DBRepository dbRepository;
+
     @RequestMapping(value = "/home", method = RequestMethod.GET)
     public String greetingForm(Authentication authentication, Model model) {
         model.addAttribute("name", authentication.getName());
         return "home";
+    }
+
+    @RequestMapping(value = "/games", method = RequestMethod.GET)
+    public String gamesForm(Authentication authentication, Model model) {
+        model.addAttribute("name", authentication.getName());
+        model.addAttribute("games", gameRepository.findAll());
+        return "games";
     }
 
     @RequestMapping(value = "/admin", method = RequestMethod.GET)
@@ -59,6 +71,15 @@ public class QuizController {
     public void runQuestion(@Payload Question question) {
         Gson gson = new GsonBuilder().create();
         template.convertAndSend("/topic/question", gson.toJson(question));
+    }
+
+    @Synchronized
+    @MessageMapping("/ready")
+    public void ready(@Payload String message, Authentication authentication) {
+        if (questionRepository.getCurrent() > 2) {
+            template.convertAndSend("/topic/ready", "start");
+            dbRepository.resetSequence();
+        }
     }
 
     @MessageExceptionHandler
