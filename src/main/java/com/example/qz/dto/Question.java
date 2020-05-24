@@ -11,6 +11,8 @@ public class Question {
     @GeneratedValue(strategy= GenerationType.AUTO)
     private Long id;
 
+    private Long gameId;
+
     private String description;
 
     private Integer cost;
@@ -42,10 +44,19 @@ public class Question {
         this.cost = cost;
     }
 
+    public Long getGameId() {
+        return gameId;
+    }
+
+    public void setGameId(Long gameId) {
+        this.gameId = gameId;
+    }
+
     @Override
     public String toString() {
         return "Question{" +
             "id=" + id +
+            ", gameId=" + gameId +
             ", description='" + description + '\'' +
             ", cost=" + cost +
             '}';

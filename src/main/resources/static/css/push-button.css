@@ -101,7 +101,7 @@ a.small {
     -webkit-box-shadow: 5px 5px 10px rgba(0,0,0,.3);
     -o-box-shadow: 5px 5px 10px rgba(0,0,0,.3);
     -moz-box-shadow: 5px 5px 10px rgba(0,0,0,.3);
-    box-shadow: 0px 0px 17px rgb(224, 80, 191);
+    box-shadow: 5px 5px 10px rgba(0,0,0,.3);
     z-index: 2;
     border-size: 10px;
     -webkit-transform: rotate(180deg);

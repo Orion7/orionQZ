@@ -23,18 +23,12 @@ function connect() {
         stompClient.subscribe('/user/queue/reply', function(message) {
                                                             showMessage(JSON.parse(message.body));
                                                         });
-
         stompClient.subscribe('/topic/info', function(message) {
                                                                     showMessage(message.body);
                                                                 })
-
         stompClient.subscribe('/topic/question', function(message) {
                                                                      start(message.body);
-                                                                            })
-
-         stompClient.subscribe('/topic/ready', function(message) {
-            startAudio();
-         })
+                                                                        })
     });
 }
 

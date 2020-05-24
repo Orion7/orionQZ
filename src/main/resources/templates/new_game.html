@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.w3.org/1999/xhtml">
+<head>
+    <meta charset="UTF-8">
+    <title>Orion Quiz. Новая игра.</title>
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta charset="utf-8" />
+    <meta title="viewport" content="width=device-width, initial-scale=1.0">
+    <link type="text/css" rel="stylesheet" th:href="@{/css/qz.css}" />
+    <link type="text/css" rel="stylesheet" th:href="@{/css/push-button.css}" />
+
+    <script th:src="@{/jquery-3.5.0.min.js}"></script>
+    <script th:src="@{/sockjs-0.3.4.js}"></script>
+    <script th:src="@{/stomp.js}"></script>
+</head>
+<body>
+<div class="background">
+    <div class="content">
+        <header>
+            <div>
+                <ul class="small">
+                    <li class="small"><a href="#" class="round green small" id="send">Orion Quiz</a></li>
+                </ul>
+            </div>
+        </header>
+        <div><h3>Редактор игры</h3></div>
+        <form action="#" th:action="@{/addgame}" th:object="${game}" method="post">
+            <div class="margin-21">
+                <div>
+                    <input type="hidden" th:field="*{id}">
+                    <input class="game-title" type="text" th:field="*{title}" id="title" placeholder="Название">
+                </div>
+                <table>
+                    <tr th:each="qst, itemStat : *{questions}">
+                        <td>
+                            <input type="hidden" th:field="*{questions[__${itemStat.index}__].id}">
+                        </td>
+                        <td>
+                            <textarea class="qst-text-area" type="text" th:field="*{questions[__${itemStat.index}__].description}"
+                                    placeholder="Вопрос">
+                            </textarea>
+                        </td>
+                    </tr>
+                </table>
+                <input type="submit" name="addRow" value="Добавить вопрос">
+            </div>
+            <div>
+                <input type="submit" value="Сохранить игру">
+            </div>
+        </form>
+    </div>
+</div>
+</body>
+</html>
