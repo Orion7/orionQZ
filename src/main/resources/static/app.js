@@ -24,11 +24,13 @@ function connect() {
                                                             showMessage(JSON.parse(message.body));
                                                         });
         stompClient.subscribe('/topic/info', function(message) {
-                                                                    showMessage(message.body);
+                                                                    refreshScoreTable(JSON.parse(message.body));
                                                                 })
         stompClient.subscribe('/topic/question', function(message) {
                                                                      start(message.body);
                                                                         })
+
+        sendName();
     });
 }
 
@@ -42,10 +44,7 @@ function disconnect() {
 
 function sendName() {
      stompClient.send("/app/greeting", {
-     }, JSON.stringify({
-         'name': $("#name").val(),
-         'toUser' : $("#name").val()
-     }));
+     }, $("#nickname").val());
 }
 
 function sendReady() {
@@ -59,6 +58,13 @@ function sendQuestion(question) {
 
 function showMessage(message) {
     $("#question").text(message.description);
+}
+
+function refreshScoreTable(scores) {
+    $("#scoretable").empty();
+    for(i = 0; i < scores.length; i++) {
+        $("#scoretable").append("<tr><td>" + (i + 1) + "</td><td>" + scores[i].nickname + "</td><td>" + scores[i].score + "</td></tr>")
+    }
 }
 
 function startAudio() {
@@ -81,7 +87,12 @@ $(function () {
     $("form").on('submit', function (e) {
         e.preventDefault();
     });
-    $( "#connect" ).click(function() { connect(); });
+    $( ".close" ).click(function() {
+        $("#shadow").hide();
+        $("#sendBtnDiv").show();
+        connect();
+    });
+
     $( "#disconnect" ).click(function() { disconnect(); });
     $( "#send" ).click(function() { sendName(); });
 
@@ -127,5 +138,7 @@ $(function () {
 });
 
 $( document ).ready(function() {
-    connect();
+    if($("#sendBtnDiv").is(":visible")) {
+        connect();
+    }
 });

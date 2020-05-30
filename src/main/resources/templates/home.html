@@ -18,37 +18,25 @@
     Javascript and reload this page!</h2></noscript>
 <div class="div-center">
     <div>
-        <div>
+        <div id="sendBtnDiv" th:style="${user.isLogged == true ? 'display:block' : 'display:none'}" >
             <form>
                 <div>
                     <ul class="big">
-                        <li class="big"><a href="#" class="round green big" id="send">Push me</a></li>
+                        <li class="big"><a class="round green big" id="send">Push me</a></li>
                     </ul>
                 </div>
             </form>
         </div>
-        <div>
-            <table class="table">
+        <div class="score-div">
+            <table class="score-table">
                 <thead>
                 <tr>
-                    <th>#</th>
-                    <th>Команда</th>
-                    <th><span>Очки</span></th>
+                    <th style="width: 11%">#</th>
+                    <th style="width: 67%">Команда</th>
+                    <th style="width: 22%">Очки</th>
                 </tr>
                 </thead>
-                <tbody>
-                <tr class="">
-                    <td>1</td>
-                    <td class="tcHD4UdS3tOGeeDG2LXM6">
-                        <strong class="_2J1rakFxn8XCpAbm3OGhHl">Ghh</strong>
-                    </td>
-                    <td><strong>0</strong></td>
-                </tr>
-                <tr class="">
-                    <td>2</td>
-                    <td class="tcHD4UdS3tOGeeDG2LXM6"><strong class="_2J1rakFxn8XCpAbm3OGhHl">Viksa</strong></td>
-                    <td><strong>0</strong></td>
-                </tr>
+                <tbody id="scoretable">
                 </tbody>
             </table>
         </div>
@@ -59,6 +47,12 @@
     <audio id="player">
         <source id="playerSrc">
     </audio>
+</div>
+<div id="shadow" th:style="${user.isLogged == false ? 'display:block' : 'display:none'}">
+    <div id="popup">
+        <input id="nickname" th:field="${user.nickname}" maxlength="30" placeholder="Ваше имя">
+        <a class="close">Войти в игру</a>
+    </div>
 </div>
 </body>
 </html>

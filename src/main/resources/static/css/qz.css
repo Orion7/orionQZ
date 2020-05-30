@@ -1,3 +1,7 @@
+textarea:focus, input:focus{
+    outline: none;
+}
+
 .table-center {
     margin: 0 auto;
 }
@@ -50,4 +54,95 @@ h3 {
 
 .margin-21 {
     margin-bottom: 21px;
+}
+
+#shadow {
+    background: rgba(102, 102, 102, 0.5);
+    width: 100%;
+    height: 100%;
+    position: absolute;
+    top: 0;
+    left: 0;
+}
+
+#popup {
+    width: 360px;
+    height: 130px;
+    text-align: center;
+    padding: 15px;
+    border: 3px solid #4a76a8;
+    border-radius: 20px;
+    color: #4a76a8;
+    position: absolute;
+    top: 0;
+    right: 0;
+    bottom: 0;
+    left: 0;
+    margin: auto;
+    background: #fff;
+}
+
+#shadow:target {
+    display: block;
+}
+
+.close {
+    width: 173px;
+    height: 39px;
+    color: #fff;
+    display: inline-block;
+    border: 5px solid #4a76a8;
+    padding: 0 12px;
+    margin-top: 3px;
+    text-decoration: none;
+    background: #4a76a8;
+    font-size: 14pt;
+    cursor: pointer;
+    text-align: center;
+    border-radius: 25px;
+    line-height: 27px;
+}
+
+.close:hover {
+    background: #5c91ce;
+}
+
+#nickname {
+    width: 295px;
+    height: 49px;
+    display: block;
+    margin: 20px auto;
+    padding: 5px 20px;
+    border: 3px solid #4a76a8;
+    border-radius: 20px;
+    font-size: 20px;
+}
+
+.score-div {
+    width: 380px;
+    text-align: left;
+    font-size: 22px;
+    margin: 0 auto;
+    color: #3f4273;
+}
+
+.score-table {
+    width: 100%;
+    border-spacing: 0px;
+}
+.score-table td {
+    padding: 2px 7px 0 2px;
+    border-bottom: 2px solid #4a76a8;
+}
+
+.score-table th {
+    padding: 7px 7px 0 2px;
+    border-bottom: 2px solid #4a76a8;
+}
+
+tbody:before {
+    line-height:1em;
+    content:"_";
+    color:white;
+    display:block;
 }

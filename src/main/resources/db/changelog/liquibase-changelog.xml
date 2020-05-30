@@ -6,4 +6,5 @@
 
     <include file="migrations/init_db.sql" relativeToChangelogFile="true"/>
     <include file="migrations/add_primary_key.sql" relativeToChangelogFile="true"/>
+    <include file="migrations/add_column_logged.sql" relativeToChangelogFile="true"/>
 </databaseChangeLog>
