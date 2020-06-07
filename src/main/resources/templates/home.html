@@ -27,7 +27,7 @@
                 </div>
             </form>
         </div>
-        <div class="score-div">
+        <div class="score-div" th:style="${user.isLogged == true ? 'display:block' : 'display:none'}">
             <table class="score-table">
                 <thead>
                 <tr>
@@ -48,10 +48,17 @@
         <source id="playerSrc">
     </audio>
 </div>
-<div id="shadow" th:style="${user.isLogged == false ? 'display:block' : 'display:none'}">
+<div class="shadow" th:style="${user.isLogged == false ? 'display:block' : 'display:none'}">
     <div id="popup">
-        <input id="nickname" th:field="${user.nickname}" maxlength="30" placeholder="Ваше имя">
+        <input class="shadow-btn" id="nickname" th:field="${user.nickname}" maxlength="30" placeholder="Ваше имя">
         <a class="close">Войти в игру</a>
+    </div>
+</div>
+
+<div id="answer-div" class="shadow" style="display: none">
+    <div id="answer_popup">
+        <input class="shadow-btn" id="answer" maxlength="300" placeholder="Ответ">
+        <a class="close-answer">Отправить</a>
     </div>
 </div>
 </body>

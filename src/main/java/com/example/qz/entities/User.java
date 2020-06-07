@@ -27,6 +27,14 @@ public class User {
     @Column(name = "is_logged")
     private Boolean isLogged;
 
+    public void addPoints(Integer points) {
+        score += points;
+    }
+
+    public void subtractPoints(Integer points) {
+        score -= points;
+    }
+
     @Override
     public String toString() {
         return "User{" +

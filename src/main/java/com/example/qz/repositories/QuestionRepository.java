@@ -1,6 +1,6 @@
 package com.example.qz.repositories;
 
-import com.example.qz.dto.Question;
+import com.example.qz.entities.Question;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.CrudRepository;
 

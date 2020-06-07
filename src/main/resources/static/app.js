@@ -1,24 +1,11 @@
 var stompClient = null;
 
-function setConnected(connected) {
-    $("#connect").prop("disabled", connected);
-    $("#disconnect").prop("disabled", !connected);
-    if (connected) {
-        $("#conversation").show();
-    }
-    else {
-        $("#conversation").hide();
-    }
-    $("#greetings").html("");
-}
-
 function connect() {
     var socket = new SockJS('/greeting');
     stompClient = Stomp.over(socket);
     stompClient.connect({
     }
     , function (frame) {
-        setConnected(true);
         console.log('Connected: ' + frame);
         stompClient.subscribe('/user/queue/reply', function(message) {
                                                             showMessage(JSON.parse(message.body));
@@ -29,22 +16,22 @@ function connect() {
         stompClient.subscribe('/topic/question', function(message) {
                                                                      start(message.body);
                                                                         })
+        stompClient.subscribe('/topic/answer', function(message) {
+                                                                             start(message.body);
+                                                })
 
         sendName();
     });
 }
 
-function disconnect() {
-    if (stompClient != null) {
-        stompClient.disconnect();
-    }
-    setConnected(false);
-    console.log("Disconnected");
-}
-
 function sendName() {
      stompClient.send("/app/greeting", {
      }, $("#nickname").val());
+}
+
+function sendAnswer() {
+     stompClient.send("/app/answer", {
+     }, $("#answer").val());
 }
 
 function sendReady() {
@@ -88,13 +75,27 @@ $(function () {
         e.preventDefault();
     });
     $( ".close" ).click(function() {
-        $("#shadow").hide();
+        $(".shadow").hide();
+        $(".score-div").show();
         $("#sendBtnDiv").show();
         connect();
     });
 
+    $( ".close-answer" ).click(function() {
+        $(".shadow").hide();
+        $(".score-div").show();
+        $("#sendBtnDiv").show();
+        sendAnswer()
+    });
+
     $( "#disconnect" ).click(function() { disconnect(); });
-    $( "#send" ).click(function() { sendName(); });
+
+    $( "#send" ).click(function() {
+        sendName();
+        $(".score-div").hide();
+        $("#sendBtnDiv").hide();
+        $("#answer-div").show();
+    });
 
     $( ".question" ).click(function() {
 
@@ -106,35 +107,6 @@ $(function () {
                  })
         );
     });
-
-    $( "#upload" ).click(function() {
-        var f = document.getElementById('file').files[0];
-        var file = {name: f.name, summary: 'kek'};
-
-        jQuery.ajax ({
-            url: '/files/',
-            type: "POST",
-            data: JSON.stringify(file),
-            dataType: "json",
-            contentType: "application/json; charset=utf-8",
-            success: function(data, textStatus, response){
-                var fd = new FormData();
-                fd.append('file', f);
-
-                jQuery.ajax ({
-                            url: response.getResponseHeader("Location"),
-                            type: "PUT",
-                            data: fd,
-                            processData: false,
-                            contentType: false,
-                            success: function(data, textStatus, response){
-                            }
-                        });
-            }
-        });
-
-
-    })
 });
 
 $( document ).ready(function() {

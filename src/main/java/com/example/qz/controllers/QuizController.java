@@ -1,15 +1,20 @@
 package com.example.qz.controllers;
 
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
 
 import javax.servlet.http.HttpServletRequest;
+import javax.transaction.Transactional;
 
-import com.example.qz.dto.Question;
+import com.example.qz.dto.AnswerDto;
+import com.example.qz.entities.Answer;
+import com.example.qz.entities.Question;
 import com.example.qz.entities.Game;
 import com.example.qz.entities.User;
+import com.example.qz.repositories.AnswerRepository;
 import com.example.qz.repositories.DBRepository;
 import com.example.qz.repositories.GameRepository;
 import com.example.qz.repositories.QuestionRepository;
@@ -48,6 +53,9 @@ public class QuizController {
     UserRepository userRepository;
 
     @Autowired
+    AnswerRepository answerRepository;
+
+    @Autowired
     private DBRepository dbRepository;
 
     @RequestMapping(value = "/home", method = RequestMethod.GET)
@@ -65,13 +73,13 @@ public class QuizController {
         return "games";
     }
 
-    @RequestMapping(value="/addgame", params={"addRow"})
+    @RequestMapping(value = "/addgame", params = {"addRow"})
     public String addRow(Game game, final BindingResult bindingResult) {
         game.getQuestions().add(new Question());
         return "new_game";
     }
 
-    @RequestMapping(value="/addgame", params={"removeRow"})
+    @RequestMapping(value = "/addgame", params = {"removeRow"})
     public String removeRow(Game game, BindingResult bindingResult, HttpServletRequest req) {
         int rowId = Integer.parseInt(req.getParameter("removeRow"));
         game.getQuestions().remove(rowId);
@@ -95,7 +103,12 @@ public class QuizController {
 
         game.setQuestions(Collections.emptyList());
         Game savedGame = gameRepository.save(game);
-        questions.forEach(q -> q.setGameId(savedGame.getId()));
+        questions.forEach(q -> {
+            q.setGameId(savedGame.getId());
+            if (q.getCost() == null) {
+                q.setCost(100);
+            }
+        });
 
         questionRepository.saveAll(questions);
 
@@ -129,6 +142,38 @@ public class QuizController {
         List<User> logged = userRepository.findByIsLogged(true);
         logged.sort(Comparator.comparingInt(User::getScore).reversed());
         template.convertAndSend("/topic/info", logged);
+    }
+
+    @MessageMapping("/answer")
+    public void createAnswer(@Payload String playerAnswer, Authentication authentication) {
+        User user = userRepository.findByName(authentication.getName());
+
+        Answer answer = new Answer();
+        answer.setAnswer(playerAnswer);
+        answer.setUser(user);
+        answer.setDate(LocalDateTime.now());
+        answer.setQuestion(questionRepository.findById(2L).get());
+        answer.setProcessed(false);
+        answerRepository.save(answer);
+
+        template.convertAndSend("/topic/answers", answerRepository.findByProcessed(false));
+    }
+
+    @MessageMapping("/processAnswer")
+    @Transactional
+    public void processAnswer(@Payload AnswerDto answer) {
+        Answer ans = answerRepository.findById(answer.getAnswerId()).get();
+        User user = ans.getUser();
+        Question question = ans.getQuestion();
+
+        if (answer.getApproved()) {
+            user.addPoints(question.getCost());
+        }
+
+        ans.setProcessed(true);
+        answerRepository.save(ans);
+
+        template.convertAndSend("/topic/answers", answerRepository.findByProcessed(false));
     }
 
     @MessageMapping("/question")

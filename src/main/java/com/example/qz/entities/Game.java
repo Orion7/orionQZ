@@ -11,7 +11,6 @@ import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.OneToMany;
 
-import com.example.qz.dto.Question;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;

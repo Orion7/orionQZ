@@ -1,4 +1,4 @@
-package com.example.qz.dto;
+package com.example.qz.entities;
 
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
@@ -16,6 +16,8 @@ public class Question {
     private String description;
 
     private Integer cost;
+
+    private Boolean active;
 
     public Question() {
     }
@@ -52,6 +54,14 @@ public class Question {
         this.gameId = gameId;
     }
 
+    public Boolean getActive() {
+        return active;
+    }
+
+    public void setActive(Boolean active) {
+        this.active = active;
+    }
+
     @Override
     public String toString() {
         return "Question{" +
@@ -59,6 +69,7 @@ public class Question {
             ", gameId=" + gameId +
             ", description='" + description + '\'' +
             ", cost=" + cost +
+            ", active=" + active +
             '}';
     }
 }

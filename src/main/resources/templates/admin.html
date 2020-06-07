@@ -1,37 +1,61 @@
 <!DOCTYPE html>
-<html xmlns:th="http://www.thymeleaf.org">
+<html lang="en" xmlns:th="http://www.w3.org/1999/xhtml">
 <head>
+    <meta charset="UTF-8">
+    <title>Orion Quiz. Список игр.</title>
     <meta http-equiv="X-UA-Compatible" content="IE=edge" />
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link type="text/css" rel="stylesheet" th:href="@{/css/qz.css}" />
+    <link type="text/css" rel="stylesheet" th:href="@{/css/push-button.css}" />
 
     <script th:src="@{/jquery-3.5.0.min.js}"></script>
     <script th:src="@{/sockjs-0.3.4.js}"></script>
     <script th:src="@{/stomp.js}"></script>
-    <script th:src="@{/app.js}"></script>
+    <script th:src="@{/admin.js}"></script>
 </head>
 <body>
-<noscript><h2 style="color: #ff0000">Seems your browser doesn't support Javascript! Websocket relies on Javascript being
-    enabled. Please enable
-    Javascript and reload this page!</h2></noscript>
-<div class="div-center">
-    <div style="margin-bottom: 25px;">
-        <tr th:each="question : ${questions}">
+<div class="background">
+    <div class="content">
+        <header>
             <div>
-                <div>
-                    <a href="#" th:description="${question.description}"
-                            th:qid="${question.id}"
-                            th:cost="${question.cost}"
-                            th:text="${question.description}" class="question"></a>
-                </div>
+                <ul class="small">
+                    <li class="small"><a href="#" class="round green small" id="send">Orion Quiz</a></li>
+                </ul>
             </div>
+        </header>
+        <div id="answers" class="ans-div">
+            <table class="score-table">
+                <thead>
+                <tr>
+                    <th>Время</th>
+                    <th>Команда</th>
+                    <th>Ответ</th>
+                    <th>Вопрос</th>
+                    <th></th>
+                </tr>
+                </thead>
+                <tbody id="answertable">
+                </tbody>
+            </table>
+        </div>
+        <div style="margin-bottom: 25px;">
+            <tr th:each="question : ${questions}">
+                <div>
+                    <div>
+                        <a href="#" th:description="${question.description}"
+                                th:qid="${question.id}"
+                                th:cost="${question.cost}"
+                                th:text="${question.description}" class="question"></a>
+                    </div>
+                </div>
+        </div>
+
+        <div style="display: none">
+        <input type="file" id="file" name="file" />
+        <button id="upload">Upload</button>
+        </div>
     </div>
-    </tr>
-    <input type="file" id="file" name="file" />
-    <button id="upload">Upload</button>
-</div>
 </div>
 </body>
 </html>
-
