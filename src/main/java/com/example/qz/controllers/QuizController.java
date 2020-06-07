@@ -136,6 +136,7 @@ public class QuizController {
         user.setIsLogged(true);
         user.setNickname(nickname);
         userRepository.save(user);
+
 //        template.convertAndSendToUser(authentication.getName(),
 //            "/queue/reply", "success");
 
