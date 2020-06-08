@@ -11,6 +11,7 @@ function connect() {
             refreshAnswerTable(JSON.parse(message.body));
         })
 
+        stompClient.send("/app/getAnswers", {}, '');
     });
 }
 
@@ -43,8 +44,10 @@ function refreshAnswerTable(ans) {
         "</td><td>"
         + ans[i].question.description +
         "</td><td>"
-        + "<input type='button' value='Approve' ansid='" + ans[i].id + "' class='approve'>" +
-        "<input type='button' value='Reject' ansid='" + ans[i].id + "' class='approve'>" +
+        + "<input type='button' value='++' action='0' ansid='" + ans[i].id + "' class='approve'>" +
+        "<input type='button' value='+' action='1' ansid='" + ans[i].id + "' class='approve'>" +
+        "<input type='button' value='-' action='2' ansid='" + ans[i].id + "' class='approve'>" +
+        "<input type='button' value='--' action='3' ansid='" + ans[i].id + "' class='approve'>" +
         "</td></tr>")
     }
 
@@ -52,7 +55,7 @@ function refreshAnswerTable(ans) {
               processAnswer(
                   JSON.stringify({
                            'answerId': $(this).attr('ansid'),
-                           'approved' : $(this).val() == "Approve"
+                           'approved' : $(this).attr('action')
                        })
               );
         });
@@ -61,17 +64,28 @@ function refreshAnswerTable(ans) {
 $(function () {
 
     $( ".question" ).click(function() {
-
-
+        $(".question").removeClass("active");
+        $(this).addClass("active");
 
         sendQuestion(
             JSON.stringify({
                      'id': $(this).attr('qid'),
                      'description' : $(this).attr('description'),
-                     'cost': $(this).attr('cost')
+                     'cost': $(this).attr('cost'),
+                     'gameId': $(this).attr('gameid')
                  })
         );
     });
+
+    $( "#stop" ).click(function() {
+            $(".question").removeClass("active");
+
+            sendQuestion(
+                JSON.stringify({
+                    'gameId': $('.question').attr('gameid')
+                })
+            );
+        });
 
     $( ".approve" ).click(function() {
           processAnswer(

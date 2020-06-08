@@ -5,14 +5,15 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
+import java.util.Optional;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.transaction.Transactional;
 
 import com.example.qz.dto.AnswerDto;
 import com.example.qz.entities.Answer;
-import com.example.qz.entities.Question;
 import com.example.qz.entities.Game;
+import com.example.qz.entities.Question;
 import com.example.qz.entities.User;
 import com.example.qz.repositories.AnswerRepository;
 import com.example.qz.repositories.DBRepository;
@@ -145,17 +146,38 @@ public class QuizController {
         template.convertAndSend("/topic/info", logged);
     }
 
+    @MessageMapping("/getAnswers")
+    public void getAnswers(Authentication authentication) {
+        template.convertAndSend("/topic/answers", answerRepository.findByProcessed(false));
+    }
+
     @MessageMapping("/answer")
     public void createAnswer(@Payload String playerAnswer, Authentication authentication) {
+        LocalDateTime now = LocalDateTime.now();
         User user = userRepository.findByName(authentication.getName());
+        Optional<Question> activeQuestion = questionRepository.findByActive(true);
 
-        Answer answer = new Answer();
-        answer.setAnswer(playerAnswer);
-        answer.setUser(user);
-        answer.setDate(LocalDateTime.now());
-        answer.setQuestion(questionRepository.findById(2L).get());
-        answer.setProcessed(false);
-        answerRepository.save(answer);
+        if (activeQuestion.isPresent()) {
+            Question activeQst = activeQuestion.get();
+            List<Answer> previousAnswers = answerRepository.findByUserIdAndQuestionIdAndProcessed(user.getId(),
+                    activeQst.getId(),
+                    false);
+
+            if (previousAnswers.isEmpty()) {
+                Answer answer = new Answer();
+                answer.setAnswer(playerAnswer);
+                answer.setDate(now);
+                answer.setUser(user);
+                answer.setQuestion(activeQst);
+                answer.setProcessed(false);
+                answerRepository.save(answer);
+            } else {
+                Answer previousAnswer = previousAnswers.get(0);
+                previousAnswer.setAnswer(playerAnswer);
+                answerRepository.save(previousAnswer);
+            }
+
+        }
 
         template.convertAndSend("/topic/answers", answerRepository.findByProcessed(false));
     }
@@ -167,8 +189,18 @@ public class QuizController {
         User user = ans.getUser();
         Question question = ans.getQuestion();
 
-        if (answer.getApproved()) {
-            user.addPoints(question.getCost());
+        switch (answer.getApproveState()) {
+            case APPROVE_PLUS:
+                user.addPoints(question.getCost() * 2);
+                break;
+            case APPROVE:
+                user.addPoints(question.getCost());
+                break;
+            case MINUS:
+                user.subtractPoints(question.getCost());
+                break;
+            default:
+                break;
         }
 
         ans.setProcessed(true);
@@ -179,6 +211,20 @@ public class QuizController {
 
     @MessageMapping("/question")
     public void runQuestion(@Payload Question question) {
+        if (question.getId() == null) {
+            List<Question> questions = questionRepository.findByGameId(question.getGameId());
+            questions.forEach(q -> q.setActive(false));
+        }
+
+        List<Question> questions = questionRepository.findByGameId(question.getGameId());
+
+        questions.forEach(q -> {
+            Boolean isActive = q.getId().equals(question.getId());
+            q.setActive(isActive);
+        });
+
+        questionRepository.saveAll(questions);
+
         Gson gson = new GsonBuilder().create();
         template.convertAndSend("/topic/question", gson.toJson(question));
     }

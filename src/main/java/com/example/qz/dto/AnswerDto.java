@@ -2,26 +2,26 @@ package com.example.qz.dto;
 
 public class AnswerDto {
     private Long answerId;
-    private Boolean approved;
+    private ApproveState approveState;
 
-    public AnswerDto(Long answerId, Boolean approved) {
+    public AnswerDto(Long answerId, ApproveState approved) {
         this.answerId = answerId;
-        this.approved = approved;
+        this.approveState = approved;
     }
 
     public Long getAnswerId() {
         return answerId;
     }
 
-    public Boolean getApproved() {
-        return approved;
+    public ApproveState getApproveState() {
+        return approveState;
     }
 
     @Override
     public String toString() {
         return "AnswerDto{" +
             "answerId=" + answerId +
-            ", approved=" + approved +
+            ", approved=" + approveState +
             '}';
     }
 }

@@ -24,7 +24,7 @@
                 </ul>
             </div>
         </header>
-        <div id="answers" class="ans-div">
+        <div id="answers" class="ans-div overflow">
             <table class="score-table">
                 <thead>
                 <tr>
@@ -39,14 +39,21 @@
                 </tbody>
             </table>
         </div>
+        <div class="margin-21">
+            <input type="button" value="Стоп" id="stop">
+        </div>
         <div style="margin-bottom: 25px;">
             <tr th:each="question : ${questions}">
-                <div>
+                <div class="margin-10">
                     <div>
-                        <a href="#" th:description="${question.description}"
+                        <a href="#"
+                                th:class="${question.active == true ? 'question active' : 'question'}"
+                                th:description="${question.description}"
                                 th:qid="${question.id}"
                                 th:cost="${question.cost}"
-                                th:text="${question.description}" class="question"></a>
+                                th:gameid="${question.gameId}"
+                                th:active="${question.active}"
+                                th:text="${question.description}"></a>
                     </div>
                 </div>
         </div>

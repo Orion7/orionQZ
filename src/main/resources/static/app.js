@@ -29,9 +29,9 @@ function sendName() {
      }, $("#nickname").val());
 }
 
-function sendAnswer() {
+function sendAnswer(answer) {
      stompClient.send("/app/answer", {
-     }, $("#answer").val());
+     }, answer == "" ? "Нет ответа" : answer);
 }
 
 function sendReady() {
@@ -41,10 +41,6 @@ function sendReady() {
 
 function sendQuestion(question) {
     stompClient.send("/app/question", {}, question);
-}
-
-function showMessage(message) {
-    $("#question").text(message.description);
 }
 
 function refreshScoreTable(scores) {
@@ -60,8 +56,6 @@ function startAudio() {
 }
 
 function start(message) {
-        message = JSON.parse(message)
-        $("#question").text(message.description);
 
         var audio = $("#player");
         $("#playerSrc").attr('src', '/files/' + message.id)
@@ -85,13 +79,13 @@ $(function () {
         $(".shadow").hide();
         $(".score-div").show();
         $("#sendBtnDiv").show();
-        sendAnswer()
+        sendAnswer($("#answer").val())
     });
 
     $( "#disconnect" ).click(function() { disconnect(); });
 
     $( "#send" ).click(function() {
-        sendName();
+        sendAnswer("Нажал кнопку")
         $(".score-div").hide();
         $("#sendBtnDiv").hide();
         $("#answer-div").show();

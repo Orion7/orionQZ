@@ -6,5 +6,8 @@ import com.example.qz.entities.Answer;
 import org.springframework.data.repository.CrudRepository;
 
 public interface AnswerRepository extends CrudRepository<Answer, Long> {
+
     List<Answer> findByProcessed(Boolean processed);
+
+    List<Answer> findByUserIdAndQuestionIdAndProcessed(Long userId, Long questionId, Boolean processed);
 }
