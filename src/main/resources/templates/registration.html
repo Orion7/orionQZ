@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.w3.org/1999/xhtml">
+<head>
+    <meta charset="UTF-8">
+    <title>Orion Quiz. Регистрация</title>
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta charset="utf-8" />
+    <meta title="viewport" content="width=device-width, initial-scale=1.0">
+    <link type="text/css" rel="stylesheet" th:href="@{/css/qz.css}" />
+    <link type="text/css" rel="stylesheet" th:href="@{/css/push-button.css}" />
+
+    <script th:src="@{/jquery-3.5.0.min.js}"></script>
+</head>
+<body>
+    <div class="background">
+        <div class="content">
+            <header>
+                <div>
+                    <ul class="small">
+                        <li class="small" style="margin: auto"><a href="#" class="round green small" id="send">Orion Quiz</a></li>
+                    </ul>
+                </div>
+            </header>
+            <div>
+                <form action="#" th:action="@{/registration}" th:object="${user}" method="post">
+                    <div>
+                        <input class="shadow-btn" type="text" th:field="*{name}" placeholder="Username" autofocus="true">
+                    </div>
+                    <div>
+                        <input class="shadow-btn" type="password" th:field="*{password}" placeholder="Password">
+                    </div>
+                    <div>
+                        <input class="shadow-btn" type="password" th:field="*{passwordConfirm}" placeholder="Confirm your password">
+                    </div>
+                    <div>
+                        <input class="close-answer shadow-btn" style="margin: 20px auto;" type="submit" value="Зарегистрироваться" />
+                    </div>
+                    <div>
+                        <p class="error" th:text="${nameError}"></p>
+                        <p class="error" th:text="${passwordError}"></p>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</body>
+</html>

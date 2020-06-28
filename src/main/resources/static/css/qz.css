@@ -10,6 +10,16 @@ textarea:focus, input:focus{
     text-align: center;
 }
 
+.error {
+    color: red;
+    text-align: center;
+}
+
+.margin-left-3 {
+    margin-left: 3px;
+    padding: 3px;
+}
+
 .content {
     width: 1170px;
     padding-right: 15px;

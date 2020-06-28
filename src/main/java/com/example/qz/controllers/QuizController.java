@@ -9,6 +9,7 @@ import java.util.Optional;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.transaction.Transactional;
+import javax.validation.Valid;
 
 import com.example.qz.dto.AnswerDto;
 import com.example.qz.entities.Answer;
@@ -20,6 +21,7 @@ import com.example.qz.repositories.DBRepository;
 import com.example.qz.repositories.GameRepository;
 import com.example.qz.repositories.QuestionRepository;
 import com.example.qz.repositories.UserRepository;
+import com.example.qz.service.UserService;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import lombok.Synchronized;
@@ -33,6 +35,8 @@ import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -54,6 +58,9 @@ public class QuizController {
     UserRepository userRepository;
 
     @Autowired
+    UserService userService;
+
+    @Autowired
     AnswerRepository answerRepository;
 
     @Autowired
@@ -65,6 +72,31 @@ public class QuizController {
         model.addAttribute("user", user);
         model.addAttribute("name", authentication.getName());
         return "home";
+    }
+
+    @GetMapping("/registration")
+    public String registration(Model model) {
+        model.addAttribute("user", new User());
+
+        return "registration";
+    }
+
+    @PostMapping("/registration")
+    public String addUser(@ModelAttribute("user") @Valid User user, BindingResult bindingResult, Model model) {
+
+        if (bindingResult.hasErrors()) {
+            return "registration";
+        }
+        if (!user.getPassword().equals(user.getPasswordConfirm())) {
+            model.addAttribute("passwordError", "Пароли не совпадают");
+            return "registration";
+        }
+        if (!userService.saveUser(user)) {
+            model.addAttribute("nameError", "Пользователь с таким именем уже существует");
+            return "registration";
+        }
+
+        return "redirect:/login";
     }
 
     @RequestMapping(value = "/games", method = RequestMethod.GET)
@@ -107,7 +139,7 @@ public class QuizController {
         questions.forEach(q -> {
             q.setGameId(savedGame.getId());
             if (q.getCost() == null) {
-                q.setCost(100);
+                q.setCost(1);
             }
         });
 
@@ -125,10 +157,7 @@ public class QuizController {
 
     @RequestMapping(value = "/", method = RequestMethod.GET)
     public String greeting(Authentication authentication, Model model) {
-        User user = userRepository.findByName(authentication.getName());
-        model.addAttribute("user", user);
-        model.addAttribute("name", authentication.getName());
-        return "home";
+        return "redirect:/home";
     }
 
     @MessageMapping("/greeting")
@@ -200,7 +229,8 @@ public class QuizController {
 
         switch (answer.getApproveState()) {
             case APPROVE_PLUS:
-                user.addPoints(question.getCost() * 2);
+                user.addPoints(Optional.ofNullable(answer.getCost())
+                        .orElse(question.getCost() * 2));
                 break;
             case APPROVE:
                 user.addPoints(question.getCost());
@@ -236,6 +266,14 @@ public class QuizController {
 
         Gson gson = new GsonBuilder().create();
         template.convertAndSend("/topic/question", gson.toJson(question));
+    }
+
+    @MessageMapping("/refresh")
+    public void refresh() {
+        List<User> logged = userRepository.findByIsLogged(true);
+        logged.sort(Comparator.comparingInt(User::getScore).reversed());
+
+        template.convertAndSend("/topic/info", logged);
     }
 
     @Synchronized

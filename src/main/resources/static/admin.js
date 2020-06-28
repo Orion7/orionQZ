@@ -24,6 +24,10 @@ function sendQuestion(question) {
     stompClient.send("/app/question", {}, question);
 }
 
+function refresh() {
+    stompClient.send("/app/refresh", {}, null);
+}
+
 function processAnswer(answer) {
     stompClient.send("/app/processAnswer", {}, answer);
 }
@@ -44,10 +48,11 @@ function refreshAnswerTable(ans) {
         "</td><td>"
         + ans[i].question.description +
         "</td><td>"
-        + "<input type='button' value='++' action='0' ansid='" + ans[i].id + "' class='approve'>" +
-        "<input type='button' value='+' action='1' ansid='" + ans[i].id + "' class='approve'>" +
-        "<input type='button' value='-' action='2' ansid='" + ans[i].id + "' class='approve'>" +
-        "<input type='button' value='--' action='3' ansid='" + ans[i].id + "' class='approve'>" +
+        + "<input type='text' value='2'  ansid='" + ans[i].id + "' class='margin-left-3' style='width: 30px'>"
+        + "<input type='button' value='++' action='0' ansid='" + ans[i].id + "' class='approve margin-left-3'>" +
+        "<input type='button' value='+' action='1' ansid='" + ans[i].id + "' class='approve margin-left-3'>" +
+        "<input type='button' value='-' action='2' ansid='" + ans[i].id + "' class='approve margin-left-3'>" +
+        "<input type='button' value='--' action='3' ansid='" + ans[i].id + "' class='approve margin-left-3'>" +
         "</td></tr>")
     }
 
@@ -55,7 +60,8 @@ function refreshAnswerTable(ans) {
               processAnswer(
                   JSON.stringify({
                            'answerId': $(this).attr('ansid'),
-                           'approved' : $(this).attr('action')
+                           'approved' : $(this).attr('action'),
+                           'cost' : $(this).siblings('input[type=text]').first().val()
                        })
               );
         });
@@ -86,6 +92,8 @@ $(function () {
                 })
             );
         });
+
+    $( "#refresh" ).click(refresh);
 
     $( ".approve" ).click(function() {
           processAnswer(
