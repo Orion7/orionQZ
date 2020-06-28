@@ -9,4 +9,5 @@
     <include file="migrations/add_column_logged.sql" relativeToChangelogFile="true"/>
     <include file="migrations/add_primary_key_user_question.sql" relativeToChangelogFile="true"/>
     <include file="migrations/add_column_active.sql" relativeToChangelogFile="true"/>
+    <include file="migrations/new_user.sql" relativeToChangelogFile="true"/>
 </databaseChangeLog>

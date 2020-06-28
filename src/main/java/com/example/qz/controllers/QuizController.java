@@ -138,12 +138,21 @@ public class QuizController {
         user.setNickname(nickname);
         userRepository.save(user);
 
-//        template.convertAndSendToUser(authentication.getName(),
-//            "/queue/reply", "success");
+        Optional<Question> activeQuestion = questionRepository.findByActive(true);
+        boolean isActiveForUser = activeQuestion.isPresent() && noPreviousAnswers(user, activeQuestion.get());
 
         List<User> logged = userRepository.findByIsLogged(true);
         logged.sort(Comparator.comparingInt(User::getScore).reversed());
+
         template.convertAndSend("/topic/info", logged);
+        template.convertAndSendToUser(authentication.getName(), "/queue/reply", isActiveForUser);
+    }
+
+    private boolean noPreviousAnswers(User user, Question activeQuestion) {
+        List<Answer> previousAnswers = answerRepository.findByUserIdAndQuestionId(user.getId(),
+                activeQuestion.getId());
+        return previousAnswers.isEmpty() || previousAnswers.stream()
+                .anyMatch(answer -> answer.getAnswer().equals("Нет ответа"));
     }
 
     @MessageMapping("/getAnswers")
